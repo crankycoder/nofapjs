@@ -29,7 +29,21 @@ fs.readFileSync('./domain_blocklist.txt').toString().split('\n').forEach(functio
     }
 
     domains.push(foo);
-    console.log("pushed: " + foo);
+});
+
+var top_100 = [];
+fs.readFileSync('./top_100_us.txt').toString().split('\n').forEach(function (line) { 
+    if (line.indexOf("\/\/") == 0) {
+        return;
+    }
+
+    var foo = line.trim();
+
+    if (foo.length == 0) {
+        return;
+    }
+
+    top_100.push(foo);
 });
 
 
@@ -79,8 +93,16 @@ fs.readFile("pornfilter.bfilter", 'utf8', function(err, data) {
 
     var bloom = new BloomFilter(array, k);
 
-    console.log("007angels.com " + bloom.test("007angels.com"));
-    console.log("zubehost.com " + bloom.test("zubehost.com"));
-    console.log("fdsaztod.com " + bloom.test("fdsaztod.com"));
-    console.log("amazon.com " + bloom.test("amazon.com"));
+    console.log("----Porn hosts double check ----");
+    var noErrors = true;
+    top_100.forEach(function(pornHost) {
+        if (bloom.test(pornHost)) {
+            if (['pornhub.com', 'xhamster.com', 'xvideos.com'].indexOf(pornHost) == -1) {
+                console.log("This hostname was false positive tested as porn: " + pornHost);
+                noErrors = false;
+            }
+        }
+    });
+    console.log("All hosts were ok: " + noErrors);
+
 }); 
