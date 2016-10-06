@@ -55,16 +55,16 @@ for (var d in domains) {
 }
 
 var array = [].slice.call(filter.buckets),
-json = JSON.stringify(array);
+json = JSON.stringify({'k': k, 'data': array});
 
 // Save the JSON
 fs.writeFile("pornfilter.bfilter", json, function(err) {
     if(err) {
         return console.log(err);
     }
-
     console.log("The file was saved!");
 }); 
+
 
 // Load the JSON
 fs.readFile("pornfilter.bfilter", 'utf8', function(err, data) {
@@ -73,7 +73,9 @@ fs.readFile("pornfilter.bfilter", 'utf8', function(err, data) {
     }
 
     console.log("The file was loaded!");
-    var array = JSON.parse(data);
+    var jdata = JSON.parse(data);
+    var array = jdata['data'];
+    var k = jdata['k'];
 
     var bloom = new BloomFilter(array, k);
 
